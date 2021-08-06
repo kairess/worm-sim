@@ -4853,34 +4853,48 @@ class Brain():
 
 if __name__ == '__main__':
     import time
+    import turtle
 
-    facingDir = 0
-    targetDir = 0
-    speed = 0
-    targetSpeed = 0
-    speedChangeInterval = 0
-    food = []
+    ANGLE = 30
 
     brain = Brain()
     brain.setup()
 
     brain.randExcite()
 
+    t = turtle.Turtle()
+
     while True:
         brain.update()
 
-        targetDir = facingDir + ((brain.accumleft - brain.accumright) / 19 * math.pi)
-        targetSpeed = (abs(brain.accumleft) + abs(brain.accumright)) / 100
-        speedChangeInterval = (targetSpeed - speed) / 30
+        angle = brain.accumleft - brain.accumright
+        speed = (abs(brain.accumleft) + abs(brain.accumright)) / 30
+        try:
+            turn_ratio = brain.accumright / brain.accumleft
+        except:
+            turn_ratio = 0
 
-        print(targetDir, targetSpeed, speedChangeInterval)
+        if brain.accumleft > 0 and brain.accumright > 0:
+            if turn_ratio < 0.6:
+                t.left(ANGLE)
+            elif turn_ratio > 2:
+                t.right(ANGLE)
 
-        time.sleep(0.5)
+            t.forward(speed)
+        elif brain.accumleft > 0 and brain.accumright < 0:
+            t.right(ANGLE)
+        elif brain.accumleft < 0 and brain.accumright > 0:
+            t.left(ANGLE)
+        elif brain.accumright < 0 and brain.accumleft < 0:
+            if turn_ratio < 0.6:
+                t.left(ANGLE)
+            elif turn_ratio > 2:
+                t.right(ANGLE)
 
+            t.back(speed)
+        else:
+            pass
 
-        # for ps, s in b.postSynaptic.items():
-        #     if s != [0, 0]:
-        #         print(ps, s)
-
-    # print(b.accumleft, b.accumright)
-    # print(b.postSynaptic['ADAL'])
+        brain.accumleft = 0
+        brain.accumright = 0
+        time.sleep(0.1)
